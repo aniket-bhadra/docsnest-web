@@ -1,5 +1,7 @@
+import TextEditor from "./TextEditor";
+
 function App() {
-  return <div>hello</div>;
+  return <TextEditor />;
 }
 
 export default App;
