@@ -7,7 +7,8 @@ const TextEditor = () => {
     if (wrapper == null) return;
 
     wrapper.innerHTML = "";
-  
+    // console.log("inside callback");
+
     const editor = document.createElement("div");
     wrapper.append(editor);
     new Quill(editor, {
