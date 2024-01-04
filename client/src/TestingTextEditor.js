@@ -1,25 +1,22 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 
 const TestingTextEditor = () => {
-  // const containerRef = useRef();
-  console.log("outiside");
-  const refFn = (ref) => console.log(ref);
+  const wrapperRef = useRef();
   useEffect(() => {
-    // console.log(containerRef.current);
-    // containerRef.current.innerHTML = "";
-    new Quill("#child", {
+    const editor = document.createElement("div");
+    wrapperRef.current.append(editor);
+    new Quill(editor, {
       theme: "snow",
     });
-    // console.log(containerRef.current.innerHTML);
+    
+    return () => {
+      console.log(wrapperRef.innerHTML);
+      wrapperRef.innerHTML = "";
+    };
   }, []);
-
-  return (
-    <div id="container" ref={refFn}>
-      <div id="child">{console.log("hello")}</div>
-    </div>
-  );
+  return <div id="container" ref={wrapperRef}></div>;
 };
 
 export default TestingTextEditor;
