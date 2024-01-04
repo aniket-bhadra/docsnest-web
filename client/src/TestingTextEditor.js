@@ -3,8 +3,11 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 
 const TestingTextEditor = () => {
-  const containerRef = useRef();
+  // const containerRef = useRef();
+  console.log("outiside");
+  const refFn = (ref) => console.log(ref);
   useEffect(() => {
+    // console.log(containerRef.current);
     // containerRef.current.innerHTML = "";
     new Quill("#child", {
       theme: "snow",
@@ -13,8 +16,8 @@ const TestingTextEditor = () => {
   }, []);
 
   return (
-    <div id="container" ref={containerRef}>
-      <div id="child"></div>
+    <div id="container" ref={refFn}>
+      <div id="child">{console.log("hello")}</div>
     </div>
   );
 };
