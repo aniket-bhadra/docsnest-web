@@ -3,20 +3,21 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 
 const TestingTextEditor = () => {
-  const wrapperRef = useRef();
-  useEffect(() => {
-    const editor = document.createElement("div");
-    wrapperRef.current.append(editor);
-    new Quill(editor, {
-      theme: "snow",
-    });
-    
-    return () => {
-      console.log(wrapperRef.innerHTML);
-      wrapperRef.innerHTML = "";
-    };
-  }, []);
-  return <div id="container" ref={wrapperRef}></div>;
+  // const wrapperRef = useRef();
+  // useEffect(() => {
+  //   const editor = document.createElement("div");
+  //   wrapperRef.current.append(editor);
+  //   new Quill(editor, {
+  //     theme: "snow",
+  //   });
+
+  //   return () => {
+  //     console.log(wrapperRef.innerHTML);
+  //     wrapperRef.innerHTML = "";
+  //   };
+  // }, []);
+  // return <div id="container" ref={wrapperRef}></div>;
+  return <div>hello Home</div>;
 };
 
 export default TestingTextEditor;
