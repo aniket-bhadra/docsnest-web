@@ -30,7 +30,7 @@ const TextEditor = () => {
 
   useEffect(() => {
     if (!socket || !quill) return;
-    
+
     const handler = (delta, oldDelta, source) => {
       //we only ever want to track the changes that user makes, it is ensuring that nothing that we programatically do, is going to be sent to the server
       if (source !== "user") return;
@@ -43,6 +43,21 @@ const TextEditor = () => {
     return () => {
       //remove this event listener if we no longer need it
       quill.off("text-change", handler);
+    };
+  }, [socket, quill]);
+
+  useEffect(() => {
+    if (!socket || !quill) return;
+
+    const handler = (delta) => {
+      //on our code it actually make it actually do those changes, basically updating our document to have the changes that are being passed  from our other client
+      quill.updateContents(delta);
+    };
+    socket.on("receive-changes", handler);
+
+    return () => {
+      //remove this event listener if we no longer need it
+      socket.off("receive-changes", handler);
     };
   }, [socket, quill]);
 
