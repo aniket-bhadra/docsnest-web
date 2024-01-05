@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
@@ -16,13 +16,35 @@ const TOOLBAR_OPTIONS = [
 ];
 
 const TextEditor = () => {
+  const [socket, setSocket] = useState();
+  const [quill, setQuill] = useState();
+
   useEffect(() => {
-    const socket = io("http://localhost:3001");
+    const s = io("http://localhost:3001");
+    setSocket(s);
 
     return () => {
-      socket.disconnect();
+      s.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (!socket || !quill) return;
+    
+    const handler = (delta, oldDelta, source) => {
+      //we only ever want to track the changes that user makes, it is ensuring that nothing that we programatically do, is going to be sent to the server
+      if (source !== "user") return;
+
+      //delta--is just the thing that is changing,its not the whole doucment its just a small subset of what is changing in the doucment
+      socket.emit("send-changes", delta);
+    };
+    quill.on("text-change", handler);
+
+    return () => {
+      //remove this event listener if we no longer need it
+      quill.off("text-change", handler);
+    };
+  }, [socket, quill]);
 
   const wrapperRef = useCallback((wrapper) => {
     if (wrapper == null) return;
@@ -32,12 +54,13 @@ const TextEditor = () => {
 
     const editor = document.createElement("div");
     wrapper.append(editor);
-    new Quill(editor, {
+    const q = new Quill(editor, {
       theme: "snow",
       modules: {
         toolbar: TOOLBAR_OPTIONS,
       },
     });
+    setQuill(q);
   }, []);
   return <div className="container" ref={wrapperRef}></div>;
 };
