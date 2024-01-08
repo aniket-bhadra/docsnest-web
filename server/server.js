@@ -1,6 +1,10 @@
 const dotenv = require("dotenv").config();
 const express = require("express");
 
+// const DocumentRoutes = require("./Router/DocumentRouter");
+const { findOrCreateDocument } = require("./config/config");
+const Document = require("./models/documentModel");
+
 const connectDB = require("./DB/db");
 connectDB();
 
@@ -10,6 +14,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("API running successfully");
 });
+
+// app.use("/api/document", DocumentRoutes);
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, console.log(`server started on ${PORT}`));
@@ -24,10 +30,10 @@ const io = require("socket.io")(server, {
 io.on("connection", (socket) => {
   console.log("connected");
 
-  socket.on("get-document", (documentId) => {
-    const data = "";
+  socket.on("get-document", async (documentId) => {
+    const userDocument = await findOrCreateDocument(documentId);
     socket.join(documentId);
-    socket.emit("load-document", data);
+    socket.emit("load-document", userDocument.data);
 
     socket.on("send-changes", (delta) => {
       // console.log(delta);
@@ -36,6 +42,10 @@ io.on("connection", (socket) => {
       // socket.broadcast.emit("receive-changes", delta);
 
       socket.broadcast.to(documentId).emit("receive-changes", delta);
+    });
+
+    socket.on("save-document", async (data) => {
+      await Document.findByIdAndUpdate(documentId, { data });
     });
   });
 
