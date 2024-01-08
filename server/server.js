@@ -7,7 +7,14 @@ connectDB();
 const app = express();
 app.use(express.json());
 
-const io = require("socket.io")(3001, {
+app.get("/", (req, res) => {
+  res.send("API running successfully");
+});
+
+const PORT = process.env.PORT || 3001;
+const server = app.listen(PORT, console.log(`server started on ${PORT}`));
+
+const io = require("socket.io")(server, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
