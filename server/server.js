@@ -1,4 +1,11 @@
-require("dotenv").config();
+const dotenv = require("dotenv").config();
+const express = require("express");
+
+const connectDB = require("./DB/db");
+connectDB();
+
+const app = express();
+app.use(express.json());
 
 const io = require("socket.io")(3001, {
   cors: {
