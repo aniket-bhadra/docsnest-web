@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
+import { useParams } from "react-router-dom";
 
 const TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -16,6 +17,7 @@ const TOOLBAR_OPTIONS = [
 ];
 
 const TextEditor = () => {
+  const { id: documentId } = useParams();
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
 
@@ -27,6 +29,17 @@ const TextEditor = () => {
       s.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (!socket || !quill) return;
+    //since in this case we've to listen this event once,this is why here `once` used,this will automatically cleanup the event after it gets listened to once
+    socket.once("load-document", (document) => {
+      quill.setContents(document);
+      quill.enable();
+    });
+
+    socket.emit("get-document", documentId);
+  }, [socket, quill, documentId]);
 
   useEffect(() => {
     if (!socket || !quill) return;
@@ -75,6 +88,8 @@ const TextEditor = () => {
         toolbar: TOOLBAR_OPTIONS,
       },
     });
+    q.disable();
+    q.setText("Loading....");
     setQuill(q);
   }, []);
   return <div className="container" ref={wrapperRef}></div>;
