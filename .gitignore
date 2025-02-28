@@ -1,3 +1,4 @@
 server/node_modules
 
 .env
+vueClient/node_modules

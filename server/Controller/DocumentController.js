@@ -2,8 +2,26 @@ const Document = require("../models/documentModel");
 
 const fetchAllDocuments = async (req, res) => {
   try {
-    const existedDocuments = await Document.find({});
+    const existedDocuments = await Document.find({
+      userId: req.body.userID,
+    });
     res.status(200).json(existedDocuments);
+  } catch (error) {
+    res.status(400).json({ error: "something went wrong!" });
+  }
+};
+
+const createDocument = async (req, res) => {
+  const { documentID, userID } = req.body;
+  try {
+    const newlyCreatedDocument = await Document.create({
+      _id: documentID,
+      data: defaultValue,
+      userId: userID,
+    });
+    res.status(201).json({
+      newlyCreatedDocument,
+    });
   } catch (error) {
     res.status(400).json({ error: "something went wrong!" });
   }
@@ -11,4 +29,5 @@ const fetchAllDocuments = async (req, res) => {
 
 module.exports = {
   fetchAllDocuments,
+  createDocument,
 };

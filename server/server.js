@@ -2,6 +2,7 @@ const dotenv = require("dotenv").config();
 const express = require("express");
 
 const DocumentRoutes = require("./Router/DocumentRouter");
+const UserRoutes = require("./Router/userRouter");
 const { findOrCreateDocument } = require("./config/config");
 const Document = require("./models/documentModel");
 
@@ -15,7 +16,8 @@ app.get("/", (req, res) => {
   res.send("API running successfully");
 });
 
-app.use("/api/fetchAllDocuments", DocumentRoutes);
+app.use("/fetchAllDocuments", DocumentRoutes);
+app.use("/userRoutes", UserRoutes);
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, console.log(`server started on ${PORT}`));
