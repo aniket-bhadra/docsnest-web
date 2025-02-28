@@ -58,7 +58,7 @@ const TextEditor = () => {
     if (!socket || !quill) return;
 
     const handler = (delta, oldDelta, source) => {
-      //we only ever want to track the changes that user makes, it is ensuring that nothing that we programatically do, is going to be sent to the server
+      //we only ever want to track the changes that user makes, not through api
       if (source !== "user") return;
 
       //delta--is just the thing that is changing,its not the whole doucment its just a small subset of what is changing in the doucment
@@ -66,6 +66,7 @@ const TextEditor = () => {
     };
     quill.on("text-change", handler);
 
+    //with each socket, quill changes this clears the prevuos listenr and then add new listenr to avoid any unexpected eorr or multple same event lsitner attached
     return () => {
       //remove this event listener if we no longer need it
       quill.off("text-change", handler);
@@ -88,8 +89,17 @@ const TextEditor = () => {
   }, [socket, quill]);
 
   const wrapperRef = useCallback((wrapper) => {
+    // This useCallback runs when the div is rendered. The callback gets called with the div element.
+    // wrapper is the actual DOM element (the div)
+    // This ensures that the function executes only after the DOM renders.
+    // If placed inside useEffect, there’s a chance that useEffect runs before the ref is set.
+    // Instead of using a variable ref, we use a callback ref so it only executes when the div is rendered.
+    // useCallback prevents unnecessary re-creations of the function, optimizing performance.
+
     if (wrapper == null) return;
 
+    //that div contain toolbar and editor
+    //everytime we run our code we want to empty string to reset previous code,unless multiple toolbar can shown up & stacking one after another so everytime we run this code we want to make sure we clean the previous editor & toolbar so that multiple editor , toolbar do not stack one after another
     wrapper.innerHTML = "";
     // console.log("inside callback");
 
