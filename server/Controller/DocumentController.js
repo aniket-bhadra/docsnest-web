@@ -3,7 +3,7 @@ const Document = require("../models/documentModel");
 const fetchAllDocuments = async (req, res) => {
   try {
     const existedDocuments = await Document.find({
-      userId: req.body.userID,
+      userId: req.body.userId,
     });
     res.status(200).json(existedDocuments);
   } catch (error) {

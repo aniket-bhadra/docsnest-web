@@ -1,4 +1,3 @@
-
 const express = require("express");
 const router = express.Router();
 
@@ -7,7 +6,7 @@ const {
   createDocument,
 } = require("../Controller/DocumentController");
 
-router.route("/").get(fetchAllDocuments);
+router.route("/all").post(fetchAllDocuments);
 router.route("/").post(createDocument);
 
 module.exports = router;
