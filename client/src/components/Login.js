@@ -1,7 +1,7 @@
 // Login.jsx
 import React, { useState, useContext } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/styles.css";
 
 import { UserContext } from "../context/UserContext";
@@ -15,6 +15,9 @@ const Login = ({ toggleForm }) => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
+
+  const location = useLocation();
+  const redirectPath = location.state?.path || "/profile";
 
   const handleChange = (e) => {
     setFormData({
@@ -52,8 +55,9 @@ const Login = ({ toggleForm }) => {
       localStorage.setItem("userInfo", JSON.stringify(response.data));
       setUser(response.data);
 
-      // Redirect to dashboard
-      navigate("/profile");
+      navigate(redirectPath, {
+        replace: true,
+      });
     } catch (error) {
       setError(
         error.response?.data?.error ||

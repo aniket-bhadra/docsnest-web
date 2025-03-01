@@ -23,6 +23,9 @@ const TextEditor = () => {
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
   const { user } = useContext(UserContext);
+  if (user) {
+    console.log(user._id);
+  }
 
   useEffect(() => {
     const s = io("http://localhost:3001");

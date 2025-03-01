@@ -11,6 +11,7 @@ const fetchAllDocuments = async (req, res) => {
   }
 };
 
+// ! this controller in current setup is redundant
 const createDocument = async (req, res) => {
   const { documentID, userID } = req.body;
   try {

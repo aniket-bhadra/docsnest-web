@@ -12,6 +12,7 @@ const findOrCreateDocument = async ({ documentId, userId }) => {
     data: defaultValue,
     userId,
   });
+  console.log("new document created");
   return newlyCreatedDocument;
 };
 
