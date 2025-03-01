@@ -34,9 +34,16 @@ const io = require("socket.io")(server, {
 io.on("connection", (socket) => {
   console.log("connected");
 
-  socket.on("get-document", async (documentId) => {
-    const userDocument = await findOrCreateDocument(documentId);
+  socket.on("get-document", async (clientData) => {
+    const { documentId, userId } = clientData;
+    console.log("documentId ", documentId);
+    console.log("userId ", userId);
+    const userDocument = await findOrCreateDocument({
+      documentId,
+      userId,
+    });
     socket.join(documentId);
+    console.log(userDocument);
     socket.emit("load-document", userDocument.data);
 
     socket.on("send-changes", (delta) => {

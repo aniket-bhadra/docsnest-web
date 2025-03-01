@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useContext } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { io } from "socket.io-client";
 import { useParams } from "react-router-dom";
+import { UserContext } from "./context/UserContext";
 
 const SAVE_INTERVAL_MS = 2000;
 const TOOLBAR_OPTIONS = [
@@ -21,6 +22,7 @@ const TextEditor = () => {
   const { id: documentId } = useParams();
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     const s = io("http://localhost:3001");
@@ -39,7 +41,10 @@ const TextEditor = () => {
       quill.enable();
     });
 
-    socket.emit("get-document", documentId);
+    socket.emit("get-document", {
+      documentId,
+      userId: user._id,
+    });
   }, [socket, quill, documentId]);
 
   useEffect(() => {
