@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { v4 as uuidV4 } from "uuid";
+import { UserContext } from "../context/UserContext";
 
 const Profile = () => {
+  const { user } = useContext(UserContext);
   return (
     <div>
-      Profile
+      welcome {user?.name}
       <Link to={`/documents/${uuidV4()}`}>create an blank document</Link>
     </div>
   );

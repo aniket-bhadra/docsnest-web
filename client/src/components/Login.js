@@ -1,8 +1,10 @@
 // Login.jsx
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../styles/styles.css";
+
+import { UserContext } from "../context/UserContext";
 
 const Login = ({ toggleForm }) => {
   const [formData, setFormData] = useState({
@@ -12,6 +14,7 @@ const Login = ({ toggleForm }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
 
   const handleChange = (e) => {
     setFormData({
@@ -47,6 +50,7 @@ const Login = ({ toggleForm }) => {
 
       // Store user info in localStorage
       localStorage.setItem("userInfo", JSON.stringify(response.data));
+      setUser(response.data);
 
       // Redirect to dashboard
       navigate("/profile");
