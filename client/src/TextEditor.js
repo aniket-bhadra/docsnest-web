@@ -140,12 +140,14 @@ const TextEditor = () => {
   return (
     <div className="google-docs-container">
       <div className="header">
-        <div className="document-name">Untitled Document</div>
+        <div className="document-name">
+          {currentDocument?.title || `Anonymous document`}
+        </div>
         {currentDocument?.owner?._id === user?._id ? (
           <div className="document-name">owner: you</div>
         ) : (
           <div className="document-name">{`owner: ${
-            currentDocument?.owner?.name?.slice(0, 2) || "Unknown"
+            currentDocument?.owner?.name?.slice(0, 2) || "anonymous"
           }`}</div>
         )}
 

@@ -1,5 +1,18 @@
 const Document = require("../models/documentModel");
 const User = require("../models/userModel");
+const randomTitles = [
+  "My Notes",
+  "New Draft",
+  "Ideas",
+  "Quick Thoughts",
+  "Brainstorm",
+  "Creative Sparks",
+  "Mind Map",
+  "Thought Dump",
+  "Draft Board",
+  "Notes Hub",
+  "Fresh Thoughts",
+];
 
 const findOrCreateDocument = async ({ documentId, userId }) => {
   if (!documentId || !userId) return;
@@ -11,12 +24,14 @@ const findOrCreateDocument = async ({ documentId, userId }) => {
     // Convert to plain object and add owner
     const doc = existedDocument.toObject();
     doc.owner = await User.findById(existedDocument.userId);
-    console.log("existing doc ", doc);
     return doc;
   }
 
+  const title = randomTitles[Math.floor(Math.random() * randomTitles.length)];
+
   const newlyCreatedDocument = await Document.create({
     _id: documentId,
+    title,
     data: defaultValue,
     userId,
   });
@@ -24,7 +39,6 @@ const findOrCreateDocument = async ({ documentId, userId }) => {
   // Convert to plain object and add owner
   const doc = newlyCreatedDocument.toObject();
   doc.owner = await User.findById(userId);
-  console.log("new doc ", doc);
 
   return doc;
 };
