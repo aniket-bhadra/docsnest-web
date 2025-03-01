@@ -45,7 +45,7 @@ const TextEditor = () => {
     });
     socket.on("user-joined", (user) => {
       console.log(user.name, "joined");
-    }); 
+    });
     socket.emit("get-document", {
       documentId,
       userId: user._id,
@@ -110,7 +110,7 @@ const TextEditor = () => {
     if (wrapper == null) return;
 
     //that div contain toolbar and editor
-    //everytime we run our code we want to empty string to reset previous code,unless multiple toolbar can shown up & stacking one after another so everytime we run this code we want to make sure we clean the previous editor & toolbar so that multiple editor , toolbar do not stack one after another
+    //everytime we run our code we want to empty string to reset previous code,unless multiple toolbar can shown up & stacking one after another so everytime we run this code we want to make sure we clean the previous editor & toolbar so that multiple editor , toolbar do not stack one after another, and do that we need to make sure that we wrap the toolbar and editor insdie an parent div,so that everytime i make changes during delopment, i can cleanued its innerHtml which is basically cleaing the preivous toolbar and editro, that is why not drielcy quil is attached but rather we create element an parent div then attaches the editor and toolbar, becuse on whatever elemetn i attach quill, it attaches the editor on that div, and toolbar outside of that div, that is why we created an parent div, and dynmically created an div, where we attach quill, means in thisdynmic div quill ataches the editor and outsdife of that dynmic div, quill renders toolbar, so everything render insdie my div, so that whnver i make change i can cleaned previous stuff, and prevent mulple toolbar stakcing one after anther
     wrapper.innerHTML = "";
     // console.log("inside callback");
 
@@ -126,7 +126,17 @@ const TextEditor = () => {
     q.setText("Loading....");
     setQuill(q);
   }, []);
-  return <div className="container" ref={wrapperRef}></div>;
+  return (
+    <div class="google-docs-container">
+      <div class="header">
+        <div class="document-name">Untitled Document</div>
+        <div class="profile-icon">
+          <div class="avatar">JD</div>
+        </div>
+      </div>
+      <div class="editor-container" ref={wrapperRef}></div>
+    </div>
+  );
 };
 
 export default TextEditor;
