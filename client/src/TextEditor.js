@@ -111,20 +111,9 @@ const TextEditor = () => {
   }, [socket, quill]);
 
   const wrapperRef = useCallback((wrapper) => {
-    // This useCallback runs when the div is rendered. The callback gets called with the div element.
-    // wrapper is the actual DOM element (the div)
-    // This ensures that the function executes only after the DOM renders.
-    // If placed inside useEffect, there’s a chance that useEffect runs before the ref is set.
-    // Instead of using a variable ref, we use a callback ref so it only executes when the div is rendered.
-    // useCallback prevents unnecessary re-creations of the function, optimizing performance.
-
     if (wrapper == null) return;
 
-    //that div contain toolbar and editor
-    //everytime we run our code we want to empty string to reset previous code,unless multiple toolbar can shown up & stacking one after another so everytime we run this code we want to make sure we clean the previous editor & toolbar so that multiple editor , toolbar do not stack one after another, and do that we need to make sure that we wrap the toolbar and editor insdie an parent div,so that everytime i make changes during delopment, i can cleanued its innerHtml which is basically cleaing the preivous toolbar and editro, that is why not drielcy quil is attached but rather we create element an parent div then attaches the editor and toolbar, becuse on whatever elemetn i attach quill, it attaches the editor on that div, and toolbar outside of that div, that is why we created an parent div, and dynmically created an div, where we attach quill, means in thisdynmic div quill ataches the editor and outsdife of that dynmic div, quill renders toolbar, so everything render insdie my div, so that whnver i make change i can cleaned previous stuff, and prevent mulple toolbar stakcing one after anther
     wrapper.innerHTML = "";
-    // console.log("inside callback");
-
     const editor = document.createElement("div");
     wrapper.append(editor);
     const q = new Quill(editor, {
@@ -137,33 +126,73 @@ const TextEditor = () => {
     q.setText("Loading....");
     setQuill(q);
   }, []);
+
+  // Helper function to render user avatar - now using profile picture if available
+  const renderUserAvatar = (userData, isOwner = false) => {
+    return (
+      <div
+        className={`avatar ${isOwner ? "owner-avatar" : ""}`}
+        key={userData._id}
+      >
+        {userData.pic ? (
+          <img
+            src={userData.pic}
+            alt={userData.name}
+            className="avatar-image"
+          />
+        ) : (
+          <span>{userData.name.slice(0, 2)}</span>
+        )}
+        {isOwner && <span className="owner-badge">Owner</span>}
+      </div>
+    );
+  };
+
   return (
     <div className="google-docs-container">
       <div className="header">
-        <div className="document-name">
-          {currentDocument?.title || `Anonymous document`}
+        <div className="document-info">
+          <div className="document-name">
+            {currentDocument?.title || "Untitled document"}
+          </div>
+          <div className="document-status">
+            <span className="save-status">Saved</span>
+          </div>
         </div>
-        {currentDocument?.owner?._id === user?._id ? (
-          <div className="document-name">owner: you</div>
-        ) : (
-          <div className="document-name">{`owner: ${
-            currentDocument?.owner?.name?.slice(0, 2) || "anonymous"
-          }`}</div>
-        )}
 
-        {isOtherUserJoined && (
-          <div className="joined-user">{`${newJoinedUser.name} joined`}</div>
-        )}
-        <div className="profile-icon">
-          {allJoinedUser.map((user) => {
-            return (
-              <div className="avatar" key={user._id}>
-                {user.name.slice(0, 2)}
-              </div>
-            );
-          })}
+        <div className="collaborators">
+          {currentDocument?.owner &&
+            renderUserAvatar(currentDocument.owner, true)}
+
+          {allJoinedUser
+            .filter(
+              (collaborator) =>
+                !currentDocument?.owner ||
+                collaborator._id !== currentDocument.owner._id
+            )
+            .map((collaborator) => renderUserAvatar(collaborator))}
         </div>
       </div>
+
+      {isOtherUserJoined && (
+        <div className="notification-banner">
+          <div className="joined-user-notification">
+            {newJoinedUser.pic ? (
+              <img
+                src={newJoinedUser.pic}
+                alt=""
+                className="notification-avatar"
+              />
+            ) : (
+              <span className="notification-initial">
+                {newJoinedUser.name.slice(0, 1)}
+              </span>
+            )}
+            <span>{newJoinedUser.name} joined the document</span>
+          </div>
+        </div>
+      )}
+
       <div className="editor-container" ref={wrapperRef}></div>
     </div>
   );
