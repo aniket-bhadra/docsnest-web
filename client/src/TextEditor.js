@@ -43,10 +43,13 @@ const TextEditor = () => {
       quill.setContents(document);
       quill.enable();
     });
-
+    socket.on("user-joined", (user) => {
+      console.log(user.name, "joined");
+    }); 
     socket.emit("get-document", {
       documentId,
       userId: user._id,
+      user,
     });
   }, [socket, quill, documentId]);
 
