@@ -36,16 +36,13 @@ io.on("connection", (socket) => {
 
   socket.on("get-document", async (clientData) => {
     const { documentId, userId, user } = clientData;
-    console.log("documentId ", documentId);
-    console.log("userId ", userId);
     const userDocument = await findOrCreateDocument({
       documentId,
       userId,
     });
     socket.join(documentId);
-    console.log(userDocument);
     socket.to(documentId).emit("user-joined", user);
-    socket.emit("load-document", userDocument.data);
+    socket.emit("load-document", userDocument);
 
     socket.on("send-changes", (delta) => {
       // console.log(delta);

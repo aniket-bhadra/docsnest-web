@@ -25,6 +25,7 @@ const TextEditor = () => {
   const [isOtherUserJoined, setIsOtherUserJoined] = useState(false);
   const [allJoinedUser, setAllJoinedUser] = useState([]);
   const [newJoinedUser, setNewJoinedUser] = useState();
+  const [currentDocument, setCurrentDocument] = useState();
   const { user } = useContext(UserContext);
 
   useEffect(() => {
@@ -47,7 +48,8 @@ const TextEditor = () => {
     if (!socket || !quill) return;
     //since in this case we've to listen this event once,this is why here `once` used,this will automatically cleanup the event after it gets listened to once
     socket.once("load-document", (document) => {
-      quill.setContents(document);
+      quill.setContents(document.data);
+      setCurrentDocument(document);
       quill.enable();
     });
     socket.on("user-joined", (user) => {
@@ -139,6 +141,14 @@ const TextEditor = () => {
     <div className="google-docs-container">
       <div className="header">
         <div className="document-name">Untitled Document</div>
+        {currentDocument?.owner?._id === user?._id ? (
+          <div className="document-name">owner: you</div>
+        ) : (
+          <div className="document-name">{`owner: ${
+            currentDocument?.owner?.name?.slice(0, 2) || "Unknown"
+          }`}</div>
+        )}
+
         {isOtherUserJoined && (
           <div className="joined-user">{`${newJoinedUser.name} joined`}</div>
         )}
