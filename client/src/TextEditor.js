@@ -22,10 +22,10 @@ const TextEditor = () => {
   const { id: documentId } = useParams();
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
+  const [isOtherUserJoined, setIsOtherUserJoined] = useState(false);
+  const [allJoinedUser, setAllJoinedUser] = useState([]);
+  const [newJoinedUser, setNewJoinedUser] = useState();
   const { user } = useContext(UserContext);
-  if (user) {
-    console.log(user._id);
-  }
 
   useEffect(() => {
     const s = io("http://localhost:3001");
@@ -37,6 +37,13 @@ const TextEditor = () => {
   }, []);
 
   useEffect(() => {
+    if (isOtherUserJoined) {
+      const timer = setTimeout(() => setIsOtherUserJoined(false), 5000);
+      return () => clearTimeout(timer); // Cleanup in case `userJoined` changes before timeout finishes
+    }
+  }, [isOtherUserJoined]);
+
+  useEffect(() => {
     if (!socket || !quill) return;
     //since in this case we've to listen this event once,this is why here `once` used,this will automatically cleanup the event after it gets listened to once
     socket.once("load-document", (document) => {
@@ -44,7 +51,9 @@ const TextEditor = () => {
       quill.enable();
     });
     socket.on("user-joined", (user) => {
-      console.log(user.name, "joined");
+      setIsOtherUserJoined(true);
+      setNewJoinedUser(user);
+      setAllJoinedUser((existingUsers) => [user, ...existingUsers]);
     });
     socket.emit("get-document", {
       documentId,
@@ -127,14 +136,23 @@ const TextEditor = () => {
     setQuill(q);
   }, []);
   return (
-    <div class="google-docs-container">
-      <div class="header">
-        <div class="document-name">Untitled Document</div>
-        <div class="profile-icon">
-          <div class="avatar">JD</div>
+    <div className="google-docs-container">
+      <div className="header">
+        <div className="document-name">Untitled Document</div>
+        {isOtherUserJoined && (
+          <div className="joined-user">{`${newJoinedUser.name} joined`}</div>
+        )}
+        <div className="profile-icon">
+          {allJoinedUser.map((user) => {
+            return (
+              <div className="avatar" key={user._id}>
+                {user.name.slice(0, 2)}
+              </div>
+            );
+          })}
         </div>
       </div>
-      <div class="editor-container" ref={wrapperRef}></div>
+      <div className="editor-container" ref={wrapperRef}></div>
     </div>
   );
 };

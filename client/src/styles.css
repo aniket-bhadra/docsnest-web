@@ -33,6 +33,11 @@ body {
   color: #444;
   font-weight: 500;
 }
+.joined-user {
+  font-size: 18px;
+  color: #4285f4;
+  font-weight: 500;
+}
 
 .profile-icon {
   display: flex;
