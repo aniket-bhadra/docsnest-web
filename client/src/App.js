@@ -13,9 +13,9 @@ function App() {
         element={<Navigate to={`documents/${uuidV4()}`} replace />}
       /> */}
 
-      {/* <Route path="documents/:id" element={<TextEditor />} /> */}
       <Route path="/" element={<Auth />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/documents/:id" element={<TextEditor />} />
     </Routes>
   );
 }
