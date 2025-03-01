@@ -5,6 +5,7 @@ import { io } from "socket.io-client";
 import { useParams } from "react-router-dom";
 import { UserContext } from "./context/UserContext";
 
+// Constants
 const SAVE_INTERVAL_MS = 2000;
 const TOOLBAR_OPTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -19,137 +20,141 @@ const TOOLBAR_OPTIONS = [
 ];
 
 const TextEditor = () => {
+  // Get document ID from URL parameters
   const { id: documentId } = useParams();
-  const [socket, setSocket] = useState();
-  const [quill, setQuill] = useState();
-  const [isOtherUserJoined, setIsOtherUserJoined] = useState(false);
-  const [allJoinedUser, setAllJoinedUser] = useState([]);
-  const [newJoinedUser, setNewJoinedUser] = useState();
-  const [currentDocument, setCurrentDocument] = useState();
+
+  // Get current user from context
   const { user } = useContext(UserContext);
 
-  useEffect(() => {
-    const s = io("http://localhost:3001");
-    setSocket(s);
+  // State variables
+  const [socket, setSocket] = useState(null);
+  const [quill, setQuill] = useState(null);
+  const [currentDocument, setCurrentDocument] = useState(null);
+  const [allJoinedUsers, setAllJoinedUsers] = useState([]);
+  const [newJoinedUser, setNewJoinedUser] = useState(null);
+  const [showJoinNotification, setShowJoinNotification] = useState(false);
 
-    return () => {
-      s.disconnect();
-    };
+  // Step 1: Connect to socket server when component mounts
+  useEffect(() => {
+    // Create socket connection
+    const newSocket = io("http://localhost:3001");
+    setSocket(newSocket);
+
+    // Clean up socket connection when component unmounts
+    return () => newSocket.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (isOtherUserJoined) {
-      const timer = setTimeout(() => setIsOtherUserJoined(false), 5000);
-      return () => clearTimeout(timer); // Cleanup in case `userJoined` changes before timeout finishes
-    }
-  }, [isOtherUserJoined]);
+  // Step 2: Set up Quill editor with a callback ref
+  const editorRef = useCallback((container) => {
+    if (!container) return;
 
+    // Clear container and create editor
+    container.innerHTML = "";
+    const editor = document.createElement("div");
+    container.append(editor);
+
+    // Initialize Quill editor
+    const quillEditor = new Quill(editor, {
+      theme: "snow",
+      modules: { toolbar: TOOLBAR_OPTIONS },
+    });
+
+    // Disable editor until document loads
+    quillEditor.disable();
+    quillEditor.setText("Loading....");
+
+    // Save editor instance to state
+    setQuill(quillEditor);
+  }, []);
+
+  // Step 3: Load document and handle user joins
   useEffect(() => {
     if (!socket || !quill) return;
-    //since in this case we've to listen this event once,this is why here `once` used,this will automatically cleanup the event after it gets listened to once
+
+    // Handle document load
     socket.once("load-document", (document) => {
       quill.setContents(document.data);
       setCurrentDocument(document);
       quill.enable();
     });
+
+    // Handle when other users join
     socket.on("user-joined", (user) => {
-      setIsOtherUserJoined(true);
+      setShowJoinNotification(true);
       setNewJoinedUser(user);
-      setAllJoinedUser((existingUsers) => [user, ...existingUsers]);
+      setAllJoinedUsers((existing) =>
+        existing.some((u) => u._id === user._id)
+          ? existing
+          : [user, ...existing]
+      );
+
+      // Hide notification after 5 seconds
+      setTimeout(() => setShowJoinNotification(false), 5000);
     });
+
+    // Request document data from server
     socket.emit("get-document", {
       documentId,
       userId: user._id,
       user,
     });
-  }, [socket, quill, documentId]);
 
+    // Cleanup event listeners on unmount
+    return () => {
+      socket.off("user-joined");
+    };
+  }, [socket, quill, documentId, user]);
+
+  // Step 4: Save document at regular intervals
   useEffect(() => {
     if (!socket || !quill) return;
 
-    const interval = setInterval(() => {
+    // Set up automatic saving
+    const saveInterval = setInterval(() => {
       socket.emit("save-document", quill.getContents());
     }, SAVE_INTERVAL_MS);
 
-    return () => {
-      clearInterval(interval);
-    };
+    // Clean up interval on unmount
+    return () => clearInterval(saveInterval);
   }, [socket, quill]);
 
+  // Step 5: Send changes when user edits document
   useEffect(() => {
     if (!socket || !quill) return;
 
-    const handler = (delta, oldDelta, source) => {
-      //we only ever want to track the changes that user makes, not through api
+    // Function to handle text changes
+    const handleTextChange = (delta, oldDelta, source) => {
+      // Only send changes made by the user (not programmatic changes)
       if (source !== "user") return;
-
-      //delta--is just the thing that is changing,its not the whole doucment its just a small subset of what is changing in the doucment
       socket.emit("send-changes", delta);
     };
-    quill.on("text-change", handler);
 
-    //with each socket, quill changes this clears the prevuos listenr and then add new listenr to avoid any unexpected eorr or multple same event lsitner attached
-    return () => {
-      //remove this event listener if we no longer need it
-      quill.off("text-change", handler);
-    };
+    // Listen for text changes
+    quill.on("text-change", handleTextChange);
+
+    // Clean up listener on unmount
+    return () => quill.off("text-change", handleTextChange);
   }, [socket, quill]);
 
+  // Step 6: Receive changes from other users
   useEffect(() => {
     if (!socket || !quill) return;
 
-    const handler = (delta) => {
-      //on our code it actually make it actually do those changes, basically updating our document to have the changes that are being passed  from our other client
+    // Function to handle incoming changes
+    const handleIncomingChanges = (delta) => {
       quill.updateContents(delta);
     };
-    socket.on("receive-changes", handler);
 
-    return () => {
-      //remove this event listener if we no longer need it
-      socket.off("receive-changes", handler);
-    };
+    // Listen for changes from server
+    socket.on("receive-changes", handleIncomingChanges);
+
+    // Clean up listener on unmount
+    return () => socket.off("receive-changes", handleIncomingChanges);
   }, [socket, quill]);
-
-  const wrapperRef = useCallback((wrapper) => {
-    if (wrapper == null) return;
-
-    wrapper.innerHTML = "";
-    const editor = document.createElement("div");
-    wrapper.append(editor);
-    const q = new Quill(editor, {
-      theme: "snow",
-      modules: {
-        toolbar: TOOLBAR_OPTIONS,
-      },
-    });
-    q.disable();
-    q.setText("Loading....");
-    setQuill(q);
-  }, []);
-
-  // Helper function to render user avatar - now using profile picture if available
-  const renderUserAvatar = (userData, isOwner = false) => {
-    return (
-      <div
-        className={`avatar ${isOwner ? "owner-avatar" : ""}`}
-        key={userData._id}
-      >
-        {userData.pic ? (
-          <img
-            src={userData.pic}
-            alt={userData.name}
-            className="avatar-image"
-          />
-        ) : (
-          <span>{userData.name.slice(0, 2)}</span>
-        )}
-        {isOwner && <span className="owner-badge">Owner</span>}
-      </div>
-    );
-  };
 
   return (
     <div className="google-docs-container">
+      {/* Document header */}
       <div className="header">
         <div className="document-info">
           <div className="document-name">
@@ -160,21 +165,64 @@ const TextEditor = () => {
           </div>
         </div>
 
+        {/* Simple collaborators display */}
         <div className="collaborators">
-          {currentDocument?.owner &&
-            renderUserAvatar(currentDocument.owner, true)}
+          {/* Show document owner */}
+          {currentDocument?.owner && (
+            <div
+              className="avatar owner-avatar"
+              key={currentDocument.owner._id}
+            >
+              {currentDocument.owner.pic ? (
+                <img
+                  src={currentDocument.owner.pic}
+                  alt={currentDocument.owner.name}
+                  className="avatar-image"
+                />
+              ) : (
+                <span>{currentDocument.owner.name.slice(0, 2)}</span>
+              )}
+              {currentDocument?.owner._id === user._id ? (
+                <span className="owner-badge">Owner:You</span>
+              ) : (
+                <span className="owner-badge">
+                  {`Owner: ${currentDocument?.owner?.name
+                    .slice(0, 2)
+                    .toUpperCase()}`}
+                </span>
+              )}
+            </div>
+          )}
 
-          {allJoinedUser
-            .filter(
-              (collaborator) =>
-                !currentDocument?.owner ||
-                collaborator._id !== currentDocument.owner._id
-            )
-            .map((collaborator) => renderUserAvatar(collaborator))}
+          {/* Show other users */}
+          {allJoinedUsers.map((collaborator) => {
+            // Skip if this user is the owner (to avoid duplicates)
+            if (
+              currentDocument?.owner &&
+              collaborator._id === currentDocument.owner._id
+            ) {
+              return null;
+            }
+
+            return (
+              <div className="avatar" key={collaborator._id}>
+                {collaborator.pic ? (
+                  <img
+                    src={collaborator.pic}
+                    alt={collaborator.name}
+                    className="avatar-image"
+                  />
+                ) : (
+                  <span>{collaborator.name.slice(0, 2)}</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {isOtherUserJoined && (
+      {/* Simple notification when users join */}
+      {showJoinNotification && newJoinedUser && (
         <div className="notification-banner">
           <div className="joined-user-notification">
             {newJoinedUser.pic ? (
@@ -185,7 +233,7 @@ const TextEditor = () => {
               />
             ) : (
               <span className="notification-initial">
-                {newJoinedUser.name.slice(0, 1)}
+                {newJoinedUser.name.charAt(0)}
               </span>
             )}
             <span>{newJoinedUser.name} joined the document</span>
@@ -193,7 +241,8 @@ const TextEditor = () => {
         </div>
       )}
 
-      <div className="editor-container" ref={wrapperRef}></div>
+      {/* Quill editor container */}
+      <div className="editor-container" ref={editorRef}></div>
     </div>
   );
 };
