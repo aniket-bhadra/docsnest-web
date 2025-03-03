@@ -204,7 +204,7 @@ body {
   justify-content: center;
 }
 
-/* Updated toolbar styles for better responsiveness */
+/* Updated toolbar styles */
 .editor-container .ql-toolbar.ql-snow {
   display: flex;
   justify-content: center;
@@ -212,29 +212,16 @@ body {
   top: 64px;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 100;
   background-color: white;
   border: none;
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   padding: 8px 0;
-  flex-wrap: nowrap; /* Keep all items in a single row */
+  flex-wrap: wrap; /* Changed from nowrap to wrap */
   width: 100%;
-  height: auto; /* Changed from fixed height to auto */
-  min-height: 42px; /* Use min-height instead of fixed height */
-  overflow-x: auto; /* Allow horizontal scrolling if needed */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-  scrollbar-width: thin; /* Thin scrollbar for Firefox */
-}
-
-/* Hide scrollbar while keeping functionality for webkit browsers */
-.editor-container .ql-toolbar.ql-snow::-webkit-scrollbar {
-  height: 3px;
-}
-
-.editor-container .ql-toolbar.ql-snow::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+  height: 42px; /* Fixed height for toolbar */
+  overflow-x: visible; /* Changed from auto to visible */
 }
 
 /* Keep toolbar items from wrapping on smaller screens */
@@ -416,7 +403,7 @@ body {
   animation: slideUp 0.3s ease;
 }
 
-/* Responsive adjustments - updated for better handling */
+/* Responsive adjustments */
 @media (max-width: 1024px) {
   .editor-container .ql-editor {
     width: 90%;
@@ -447,8 +434,11 @@ body {
     top: 56px;
     padding: 4px 8px; /* Add horizontal padding */
     justify-content: flex-start; /* Align tools to the left */
+    overflow-x: auto; /* Only add horizontal scroll on mobile */
+    height: auto; /* Auto height on mobile */
+    min-height: 42px;
   }
-  
+
   .editor-container .ql-toolbar.ql-snow .ql-formats {
     margin-right: 10px;
   }
@@ -483,25 +473,25 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
   .header {
     padding: 0 8px;
     height: 50px;
   }
-  
+
   .editor-container .ql-toolbar.ql-snow {
     top: 50px;
   }
-  
+
   .editor-container {
     height: calc(100vh - 50px - 42px);
   }
-  
+
   /* Make toolbar buttons slightly smaller on mobile */
   .editor-container .ql-toolbar.ql-snow button {
     padding: 2px;
   }
-  
+
   .editor-container .ql-toolbar.ql-snow .ql-formats {
     margin-right: 6px;
   }

@@ -277,9 +277,7 @@ const TextEditor = () => {
           </div>
           <div className="modal-you modal-body">
             <p>
-              To collaborate in real-time with others, share this link with
-              them. Once they log in, you'll be able to see their changes as
-              they happen.
+              To collaborate in real-time with others, share this link with them and ask them to paste it into their browser's search bar. If they are already logged in, they will be automatically redirected to your shared document. If not, they will be prompted to log in first, after which they will be redirected. Once they access the document, you will be able to see all changes made by them or any other collaborators in real time.
             </p>
             <div className="modal-you share-link-container">
               <input
