@@ -204,11 +204,12 @@ body {
   justify-content: center;
 }
 
+/* Updated toolbar styles for better responsiveness */
 .editor-container .ql-toolbar.ql-snow {
   display: flex;
   justify-content: center;
-  position: fixed; /* Changed from sticky to fixed */
-  top: 64px; /* Position below header */
+  position: fixed;
+  top: 64px;
   left: 0;
   right: 0;
   z-index: 10;
@@ -217,13 +218,299 @@ body {
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   padding: 8px 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Keep all items in a single row */
   width: 100%;
-  height: 42px; /* Fixed height for toolbar */
+  height: auto; /* Changed from fixed height to auto */
+  min-height: 42px; /* Use min-height instead of fixed height */
+  overflow-x: auto; /* Allow horizontal scrolling if needed */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: thin; /* Thin scrollbar for Firefox */
 }
 
+/* Hide scrollbar while keeping functionality for webkit browsers */
+.editor-container .ql-toolbar.ql-snow::-webkit-scrollbar {
+  height: 3px;
+}
+
+.editor-container .ql-toolbar.ql-snow::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* Keep toolbar items from wrapping on smaller screens */
 .editor-container .ql-toolbar.ql-snow .ql-formats {
+  display: flex;
   margin-right: 15px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  margin-bottom: 0;
+}
+
+/* Share button styles - keeping the same */
+.share-button {
+  display: flex;
+  align-items: center;
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-left: 10px;
+}
+
+.share-button svg {
+  margin-right: 6px;
+}
+
+.share-button:hover {
+  background-color: #1557b0;
+}
+
+/* Improved Modal styles */
+.modal-you.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(3px);
+  transition: all 0.3s ease;
+}
+
+.modal-you.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(0);
+  transition: transform 0.3s ease;
+  overflow: hidden;
+}
+
+.modal-you.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f3f4;
+  background-color: #f8f9fa;
+}
+
+.modal-you.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #202124;
+  font-weight: 500;
+}
+
+.modal-you.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #5f6368;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  margin-right: -8px;
+}
+
+.modal-you.close-button:hover {
+  background-color: #e8eaed;
+}
+
+.modal-you.modal-body {
+  padding: 24px;
+}
+
+.modal-you.modal-body p {
+  margin-top: 0;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  color: #3c4043;
+}
+
+.modal-you.share-link-container {
+  display: flex;
+  margin-top: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.modal-you.share-link {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #dadce0;
+  border-radius: 4px 0 0 4px;
+  font-size: 14px;
+  color: #202124;
+  background-color: #f8f9fa;
+  outline: none;
+}
+
+.modal-you.share-link:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+.modal-you.copy-button {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  padding: 0 20px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.modal-you.copy-button:hover {
+  background-color: #1557b0;
+}
+
+.modal-you.copy-button:active {
+  background-color: #174ea6;
+}
+
+/* Animation for modal appearance */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Apply animations when modal is shown */
+.modal-you.modal-overlay[style*="flex"] {
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-you.modal-overlay[style*="flex"] .modal-you.modal-content {
+  animation: slideUp 0.3s ease;
+}
+
+/* Responsive adjustments - updated for better handling */
+@media (max-width: 1024px) {
+  .editor-container .ql-editor {
+    width: 90%;
+    max-width: 8.5in;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0 12px;
+    height: 56px;
+  }
+
+  .toolbar-container {
+    top: 56px;
+  }
+
+  .document-name {
+    font-size: 16px;
+  }
+
+  .editor-container {
+    height: calc(100vh - 56px - 42px);
+    margin-top: 42px;
+  }
+
+  .editor-container .ql-toolbar.ql-snow {
+    top: 56px;
+    padding: 4px 8px; /* Add horizontal padding */
+    justify-content: flex-start; /* Align tools to the left */
+  }
+  
+  .editor-container .ql-toolbar.ql-snow .ql-formats {
+    margin-right: 10px;
+  }
+
+  .editor-container .ql-editor {
+    width: 95%;
+    min-height: calc(100vh - 120px);
+    margin: 12px auto;
+    padding: 0.5in;
+  }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .notification-banner {
+    width: 90%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .document-info {
+    max-width: 150px;
+    overflow: hidden;
+  }
+
+  .document-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .header {
+    padding: 0 8px;
+    height: 50px;
+  }
+  
+  .editor-container .ql-toolbar.ql-snow {
+    top: 50px;
+  }
+  
+  .editor-container {
+    height: calc(100vh - 50px - 42px);
+  }
+  
+  /* Make toolbar buttons slightly smaller on mobile */
+  .editor-container .ql-toolbar.ql-snow button {
+    padding: 2px;
+  }
+  
+  .editor-container .ql-toolbar.ql-snow .ql-formats {
+    margin-right: 6px;
+  }
+
+  .editor-container .ql-editor {
+    width: 98%;
+    padding: 0.3in;
+    margin: 8px auto;
+  }
 }
 
 @page {
@@ -257,80 +544,5 @@ body {
 
   .editor-container .ql-toolbar.ql-snow {
     display: none;
-  }
-}
-
-/* Responsive styles */
-@media (max-width: 1024px) {
-  .editor-container .ql-editor {
-    width: 90%;
-    max-width: 8.5in;
-  }
-}
-
-@media (max-width: 768px) {
-  .header {
-    padding: 0 12px;
-    height: 56px;
-  }
-
-  .toolbar-container {
-    top: 56px;
-  }
-
-  .document-name {
-    font-size: 16px;
-  }
-
-  .editor-container {
-    height: calc(100vh - 56px - 42px);
-    margin-top: 42px;
-  }
-
-  .editor-container .ql-toolbar.ql-snow {
-    top: 56px;
-    padding: 4px 0;
-  }
-
-  .editor-container .ql-editor {
-    width: 95%;
-    min-height: calc(100vh - 120px);
-    margin: 12px auto;
-    padding: 0.5in;
-    border-radius: 0;
-  }
-
-  .avatar {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-  }
-
-  .notification-banner {
-    width: 90%;
-    max-width: 300px;
-  }
-}
-
-@media (max-width: 480px) {
-  .document-info {
-    max-width: 150px;
-    overflow: hidden;
-  }
-
-  .document-name {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .editor-container .ql-editor {
-    width: 100%;
-    padding: 0.3in;
-    margin: 8px auto;
-  }
-
-  .editor-container .ql-toolbar.ql-snow .ql-formats {
-    margin-right: 5px;
   }
 }
