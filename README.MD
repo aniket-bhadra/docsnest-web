@@ -14,8 +14,7 @@ _**DocsNest** – A powerful, real-time collaborative document editor, built wit
 
 Experience the project in action:
 
-- 🌐 [Live Demo Link](https://your-demo-link.com)
-- 🎥 [Video Demo](https://your-video-demo-link.com)
+- 🌐 [Live Demo Link](https://aniket-bhadra.github.io/)
 
 ## 📸 Preview
 
@@ -45,69 +44,42 @@ _Share documents via a link and collaborate with Multiple users simultaneously._
 
 ### SignUp Page
 
-<details>
-<summary>View Screenshot</summary>
 
 <img src="READMEASSETS/photos/3.png" alt="Home Page Extended" width="800"/>
 
 _Create a new account or log in to access your documents._
 
-</details>
 
 ### Different Sections-1
-
-<details>
-<summary>View Screenshot</summary>
 
 <img src="READMEASSETS/photos/1.png" alt="Different Sections-1" width="800"/>
 
 _New users are greeted with a clean slate, ready to create their first document_
 
-</details>
-
 ### Different Sections-2
-
-<details>
-<summary>View Screenshot</summary>
 
 <img src="READMEASSETS/photos/7.png" alt="Different Sections-2" width="800"/>
 
 _Click the "Share" button, copy the URL, and send it to collaborate in real time._
 
-</details>
-
 ### Different Sections-3
-
-<details>
-<summary>View Screenshot</summary>
 
 <img src="READMEASSETS/photos/6.png" alt="Different Sections-3" width="800"/>
 
 _Get notified when a new collaborator joins, with their profile image displayed in the top bar_
 
-</details>
 
 ### Different Sections-4
-
-<details>
-<summary>View Screenshot</summary>
 
 <img src="READMEASSETS/photos/9.png" alt="Different Sections-3" width="800"/>
 
 _Collaborate seamlessly with others in real time, where all changes are auto-saved instantly._
 
-</details>
-
 ### Different Sections-5
-
-<details>
-<summary>View Screenshot</summary>
 
 <img src="READMEASSETS/photos/8.png" alt="Different Sections-3" width="800"/>
 
 _View all your created documents with their titles and last updated dates in a sleek, beautiful layout._
-
-</details>
 
 ## ✨ Features
 
@@ -205,9 +177,8 @@ We welcome contributions! Please follow these steps:
 
 ## 📬 Contact
 
-- Your Name - [@yourtwitter](https://twitter.com/yourtwitter)
-- Email - your.email@example.com
-- Project Link: [https://github.com/yourusername/projectname](https://github.com/yourusername/projectname)
+- linkedin - [https://www.linkedin.com/in/aniket-bhadra/](https://www.linkedin.com/in/aniket-bhadra/)
+- Email - aniketbhadra2@gmail.com
 
 ## 📊 Project Metrics
 
@@ -244,4 +215,4 @@ We welcome contributions! Please follow these steps:
 - 🖼️ **Image & Media Embedding**: Support inserting images and media files ░░░░░░░░░░░░░░░░░░░░░░ 0%
 - 🔒 **Role-Based Access Control**: Set different permissions for collaborators ▓░░░░░░░░░░░░░░░░░░░░░ 10%
 
-Made with ❤️ by [Your Name](https://github.com/yourusername)
+Made with ❤️ by [Aniket Bhadra](https://github.com/aniket-bhadra/)
